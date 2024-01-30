@@ -13,18 +13,16 @@ namespace DungeonGame.Mechanic
         public ItemType Type { get; set; }
         public int Value { get; set; }
         public bool IsSellable { get; set; }
-        public MaterialType Material { get; set; }
         public int Experience {get; set;}
 
         public bool CanDisassemble { get; set; }
 
-        public Item(string name, ItemType type, int value, bool canDisassemble, MaterialType material, bool isSellable)
+        public Item(string name, ItemType type, int value, bool canDisassemble, bool isSellable)
         {
             Name = name;
             Type = type;
             Value = value;
             IsSellable = isSellable;
-            Material = material;
             CanDisassemble = canDisassemble;
             
 
@@ -63,16 +61,6 @@ namespace DungeonGame.Mechanic
 
 
 
-
-    public enum MaterialType
-    {
-        Iron,
-        Leather,
-        Wood,
-        Crystal,
-        Steel,
-        Glass
-    }
 
 
 

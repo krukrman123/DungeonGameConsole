@@ -258,7 +258,6 @@ namespace DungeonGame.Role
                 type: randomType,
                 value: randomPrice,
                 canDisassemble: true, // Nebo jakýkoliv jiný vhodný boolean
-                material: MaterialType.Iron, // Nebo jakýkoliv jiný vhodný materiál
                 isSellable: true // Nebo jakýkoliv jiný vhodný boolean
             );
 

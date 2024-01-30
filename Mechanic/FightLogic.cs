@@ -469,9 +469,8 @@ namespace DungeonGame.Mechanic
 
             string itemName = GenerateItemName(randomType); // Nová funkce pro generování názvu předmětu
 
-            MaterialType randomMaterial = (MaterialType)random.Next(Enum.GetValues(typeof(MaterialType)).Length);
 
-            return new Item(itemName, randomType, randomValue, isSellable, randomMaterial, true);
+            return new Item(itemName, randomType, randomValue, isSellable, true);
         }
 
 

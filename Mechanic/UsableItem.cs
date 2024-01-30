@@ -15,8 +15,8 @@ namespace DungeonGame.Mechanic
 
         public ItemType ItemType { get; }
 
-        public UsableItem(string name, ItemType type, int value, bool sellable, MaterialType material, bool isUsable)
-            : base(name, type, value, sellable, material, isUsable)
+        public UsableItem(string name, ItemType type, int value, bool sellable, bool isUsable)
+            : base(name, type, value, sellable, isUsable)
         {
             ItemType = type;
         }
@@ -29,10 +29,10 @@ namespace DungeonGame.Mechanic
 
     public class Sword : UsableItem
     {
-        public Sword(string name, int value, bool isSellable, MaterialType material, bool canDisassemble, int experience)
-            : base(name, ItemType.Sword, value, isSellable, material, canDisassemble)
+        public Sword(string name, int value, bool isSellable, bool canDisassemble, int experience)
+            : base(name, ItemType.Sword, value, isSellable, canDisassemble)
         {
-            Material = material;
+            
             Experience = experience;
         }
 
@@ -68,8 +68,8 @@ namespace DungeonGame.Mechanic
 
     public class HealthPotion : UsableItem
     {
-        public HealthPotion(string name, int value, bool isSellable, MaterialType material, int experience)
-            : base(name, ItemType.HealthPotion, value, isSellable, material, true)
+        public HealthPotion(string name, int value, bool isSellable, int experience)
+            : base(name, ItemType.HealthPotion, value, isSellable, true)
         {
             Experience = experience;
         }

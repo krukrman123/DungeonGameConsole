@@ -17,8 +17,8 @@ namespace DungeonGame.Dungeon
             shopInventory = new List<Item>
             {
 
-                new Sword("Sword", 2, true, MaterialType.Iron, true, 20),
-                new HealthPotion("Health Potion", 4, true, MaterialType.Crystal, 18),
+                new Sword("Sword", 2, true, true, 20),
+                new HealthPotion("Health Potion", 4, true, 18),
                 
 
 
@@ -29,15 +29,7 @@ namespace DungeonGame.Dungeon
 
         }
 
-        private static Dictionary<MaterialType, int> materialPrices = new Dictionary<MaterialType, int>
-        {
-            { MaterialType.Iron, 5 },
-            { MaterialType.Leather, 8 },
-            { MaterialType.Wood, 3 },
-            { MaterialType.Glass, 5 },
-            { MaterialType.Crystal, 12 },
-            { MaterialType.Steel, 15 }
-        };
+      
 
 
         public static void EnterShop(Mag player)
@@ -51,22 +43,6 @@ namespace DungeonGame.Dungeon
                 Console.WriteLine($"  \u001b[32mPeníze hráče: {player.Money}\u001b[0m                        ");
                 Console.WriteLine($"  \u001b[33mZkušenosti hráče: {player.Experience}\u001b[0m                    ");
 
-
-                // Rámeček pro výpis materiálů a jejich počtu
-                Console.WriteLine("+----------------------+--------+--------+");
-                Console.WriteLine("| \u001b[36mMateriály hráče\u001b[0m      | \u001b[36mPočet\u001b[0m  | \u001b[36mCena\u001b[0m   |");
-                Console.WriteLine("+----------------------+--------+--------+");
-
-                var materials = Enum.GetValues(typeof(MaterialType)).Cast<MaterialType>();
-
-                foreach (var material in materials)
-                {
-                    int materialCount = player.Inventory.Count(item => item.Material == material);
-                    int materialPrice = materialPrices[material];
-                    Console.WriteLine($"| \u001b[36m{material.ToString(),-20}\u001b[0m | \u001b[36m{materialCount,6}\u001b[0m | \u001b[36m{materialPrice,6}\u001b[0m |");
-                }
-
-                Console.WriteLine("+----------------------+--------+--------+");
 
                 // Rámeček pro výpis předmětů v obchodě
                 Console.WriteLine("+----------------------+--------+--------+");
@@ -90,8 +66,6 @@ namespace DungeonGame.Dungeon
                 Console.WriteLine("|  1. Nákup předmětů                     |");
                 Console.WriteLine("+----------------------------------------+");
                 Console.WriteLine("|  2. Prodej předmětů                    |");
-                Console.WriteLine("+----------------------------------------+");
-                Console.WriteLine("|  3. Rozebírání předmětů                |");
                 Console.WriteLine("+----------------------------------------+\n|                                        |");
                 Console.WriteLine("|  \u001b[31m0. Opustit obchod\u001b[0m                     |");
                 Console.WriteLine("+----------------------------------------+");
@@ -99,7 +73,7 @@ namespace DungeonGame.Dungeon
 
 
                 int choice;
-                while (!int.TryParse(Console.ReadLine(), out choice) || choice < 0 || choice > 3)
+                while (!int.TryParse(Console.ReadLine(), out choice) || choice < 0 || choice > 2)
                 {
                     Console.WriteLine("Zadejte platné číslo možnosti.");
                 }
@@ -119,9 +93,6 @@ namespace DungeonGame.Dungeon
                         break;
                     case 2:
                         SellItem(player);
-                        break;
-                    case 3:
-                        DisassembleItem(player);
                         break;
                     default:
                         break;
@@ -192,29 +163,6 @@ namespace DungeonGame.Dungeon
             }
         }
 
-        private static void ProcessDisassembly(Mag player, Item selectedItem)
-        {
-            if (selectedItem.CanDisassemble)
-            {
-                Console.WriteLine($"Rozebíráte předmět '{selectedItem.Name}'...");
-
-                // Implementujte logiku pro získání materiálů z rozebírání
-                MaterialType obtainedMaterial = selectedItem.Material;
-
-                // Přidejte logiku pro získání materiálů z rozebírání
-
-                player.Inventory.Remove(selectedItem);
-                Console.WriteLine($"Předmět '{selectedItem.Name}' byl rozebrán. Získali jste materiál: {obtainedMaterial}");
-                Thread.Sleep(2000);
-            }
-            else
-            {
-                Console.WriteLine($"Předmět '{selectedItem.Name}' nelze rozebrat.");
-            }
-
-            Thread.Sleep(1500);
-            Console.Clear();
-        }
 
 
         private static void BuyItems(Mag player)
@@ -308,57 +256,6 @@ namespace DungeonGame.Dungeon
 
 
 
-        private static void DisassembleItem(Mag player)
-        {
-            Console.Clear();
-
-            while (true)
-            {
-                // Check if the player's inventory is empty
-                if (player.Inventory.Count == 0)
-                {
-                    Console.WriteLine("Váš inventář je prázdný. Není co rozebírat.");
-                    Thread.Sleep(2000);
-                    Console.Clear();
-                    return; // Automatically return to the main menu
-                }
-
-                Console.WriteLine("Vyberte předmět k rozebrání:");
-
-                for (int i = 0; i < player.Inventory.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {player.Inventory[i].Name}");
-                }
-
-                Console.WriteLine($"0. \u001b[31mOdejít z rozebrání\u001b[0m");
-
-                int itemIndex;
-                while (!int.TryParse(Console.ReadLine(), out itemIndex) || itemIndex < 0 || itemIndex > player.Inventory.Count)
-                {
-                    Console.WriteLine($"Zadejte platný index předmětu nebo číslo 0 pro odejít z rozebrání. (Max index: {player.Inventory.Count})");
-                }
-
-                if (itemIndex == 0)
-                {
-                    Console.WriteLine("Návrat do hlavní nabídky obchodu.");
-                    Thread.Sleep(1500);
-                    Console.Clear();
-                    break; // Exit the loop if the player chooses to leave
-                }
-
-                Item selectedItem = player.Inventory[itemIndex - 1];
-
-                ProcessDisassembly(player, selectedItem);
-
-
-               
-            }
-        }
-
-
-
-
-
 
         private static void BuyItem(Mag player, Item item)
         {
@@ -430,7 +327,7 @@ namespace DungeonGame.Dungeon
         private static void BuySword(Mag player, Sword swordItem)
         {
             // Vytvořte novou instanci meče s potřebnými parametry
-            Sword newSword = new Sword(swordItem.Name, swordItem.Value, swordItem.IsSellable, swordItem.Material, swordItem.CanDisassemble, swordItem.Experience);
+            Sword newSword = new Sword(swordItem.Name, swordItem.Value, swordItem.IsSellable, swordItem.CanDisassemble, swordItem.Experience);
 
             // Přidejte nový meč do inventáře hráče
             player.Inventory.Add(newSword);
@@ -439,7 +336,7 @@ namespace DungeonGame.Dungeon
 
         private static void BuyHealthPotion(Mag player, HealthPotion healthPotionItem)
         {
-            HealthPotion newHealthPotion = new HealthPotion(healthPotionItem.Name, healthPotionItem.Value, healthPotionItem.IsSellable, healthPotionItem.Material, healthPotionItem.Experience);
+            HealthPotion newHealthPotion = new HealthPotion(healthPotionItem.Name, healthPotionItem.Value, healthPotionItem.IsSellable, healthPotionItem.Experience);
 
             player.Inventory.Add(newHealthPotion);
         }
