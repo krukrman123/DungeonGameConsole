@@ -1,0 +1,450 @@
+﻿using DungeonGame.Mechanic;
+using DungeonGame.Role;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
+namespace DungeonGame.Dungeon
+{
+    public static class Shop
+    {
+        private static List<Item> shopInventory;
+
+        static Shop()
+        {
+            FightLogic fightLogic = new FightLogic();
+            // Inicializace inventáře obchodu s předměty
+            shopInventory = new List<Item>
+            {
+
+                new Sword("Sword", 2, true, MaterialType.Iron, true, 20),
+                new HealthPotion("Health Potion", 4, true, MaterialType.Crystal, 18),
+                
+
+
+        };
+
+
+
+
+        }
+
+        private static Dictionary<MaterialType, int> materialPrices = new Dictionary<MaterialType, int>
+        {
+            { MaterialType.Iron, 5 },
+            { MaterialType.Leather, 8 },
+            { MaterialType.Wood, 3 },
+            { MaterialType.Glass, 5 },
+            { MaterialType.Crystal, 12 },
+            { MaterialType.Steel, 15 }
+        };
+
+
+        public static void EnterShop(Mag player)
+        {
+            Console.Clear();
+
+            while (true)
+            {
+                Console.WriteLine("\u001b[33m  Vítejte v obchodě\u001b[0m");
+                Console.WriteLine("------------------------------------------");
+                Console.WriteLine($"  \u001b[32mPeníze hráče: {player.Money}\u001b[0m                        ");
+                Console.WriteLine($"  \u001b[33mZkušenosti hráče: {player.Experience}\u001b[0m                    ");
+
+
+                // Rámeček pro výpis materiálů a jejich počtu
+                Console.WriteLine("+----------------------+--------+--------+");
+                Console.WriteLine("| \u001b[36mMateriály hráče\u001b[0m      | \u001b[36mPočet\u001b[0m  | \u001b[36mCena\u001b[0m   |");
+                Console.WriteLine("+----------------------+--------+--------+");
+
+                var materials = Enum.GetValues(typeof(MaterialType)).Cast<MaterialType>();
+
+                foreach (var material in materials)
+                {
+                    int materialCount = player.Inventory.Count(item => item.Material == material);
+                    int materialPrice = materialPrices[material];
+                    Console.WriteLine($"| \u001b[36m{material.ToString(),-20}\u001b[0m | \u001b[36m{materialCount,6}\u001b[0m | \u001b[36m{materialPrice,6}\u001b[0m |");
+                }
+
+                Console.WriteLine("+----------------------+--------+--------+");
+
+                // Rámeček pro výpis předmětů v obchodě
+                Console.WriteLine("+----------------------+--------+--------+");
+                Console.WriteLine("| \u001b[33mPředměty v obchodě\u001b[0m   | \u001b[33mPočet\u001b[0m  | \u001b[33mCena\u001b[0m   |");
+                Console.WriteLine("+----------------------+--------+--------+");
+
+                foreach (var item in shopInventory)
+                {
+                    int itemCount = player.Inventory.Count(i => i.Name == item.Name);
+                    Console.WriteLine($"| \u001b[33m{item.Name,-20}\u001b[0m | \u001b[33m{itemCount,6}\u001b[0m | \u001b[33m{item.Value,6}\u001b[0m |");
+                }
+
+                Console.WriteLine("+----------------------+--------+--------+\n");
+
+
+
+
+                Console.WriteLine("+----------------------------------------+");
+                Console.WriteLine("|  \u001b[33mVyberte možnost:\u001b[0m                      |");
+                Console.WriteLine("+----------------------------------------+");
+                Console.WriteLine("|  1. Nákup předmětů                     |");
+                Console.WriteLine("+----------------------------------------+");
+                Console.WriteLine("|  2. Prodej předmětů                    |");
+                Console.WriteLine("+----------------------------------------+");
+                Console.WriteLine("|  3. Rozebírání předmětů                |");
+                Console.WriteLine("+----------------------------------------+\n|                                        |");
+                Console.WriteLine("|  \u001b[31m0. Opustit obchod\u001b[0m                     |");
+                Console.WriteLine("+----------------------------------------+");
+
+
+
+                int choice;
+                while (!int.TryParse(Console.ReadLine(), out choice) || choice < 0 || choice > 3)
+                {
+                    Console.WriteLine("Zadejte platné číslo možnosti.");
+                }
+
+                if (choice == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Opouštíte obchod.");
+                    break;
+                }
+
+                switch (choice)
+                {
+
+                    case 1:
+                        BuyItems(player);
+                        break;
+                    case 2:
+                        SellItem(player);
+                        break;
+                    case 3:
+                        DisassembleItem(player);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
+        public static void DisplayInventorySectionWithNumbers<T>(string sectionTitle, List<T> items, Func<T, int, string> itemFormatter)
+        {
+            Console.WriteLine($"+-------------------------+-------------------+");
+            Console.WriteLine($"| \u001b[33m{sectionTitle}\u001b[0m      | \u001b[32mCena\u001b[0m |\u001b[32m Zkušenosti \u001b[0m|");
+            Console.WriteLine($"+-------------------------+-------------------+");
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                Console.WriteLine($"| \u001b[33m{itemFormatter(items[i], i)} \u001b[0m|");
+            }
+
+            Console.WriteLine("+-------------------------+-------------------+\n|                                             |");
+        }
+
+
+
+
+
+        private static void ProcessPurchase(Mag player, Item selectedItem, int quantity)
+        {
+            // Logika pro zpracování nákupu
+            int totalCost = selectedItem.Value * quantity;
+
+            if (player.Money >= totalCost)
+            {
+                for (int i = 0; i < quantity; i++)
+                {
+                    BuyItem(player, selectedItem);
+                }
+
+                Console.Clear();
+                Console.WriteLine($"Zakoupili jste: {quantity}x {selectedItem.Name}");
+                Console.WriteLine($"Cena: {totalCost} zlaťáků");
+                Console.WriteLine($"Zbývající peníze: {player.Money}");
+                Console.Clear();
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Nemáte dostatek peněz na tuto nákupní operaci.");
+                Thread.Sleep(1500);
+            }
+        }
+
+        private static void ProcessSale(Mag player, Item selectedItem)
+        {
+            if (selectedItem.IsSellable)
+            {
+                player.Money += selectedItem.Value;
+                player.Inventory.Remove(selectedItem);
+                Console.WriteLine($"Předmět '{selectedItem.Name}' byl prodán za {selectedItem.Value} peněz.");
+                Thread.Sleep(1500);
+                Console.Clear();
+            }
+            else
+            {
+                Console.WriteLine($"Předmět '{selectedItem.Name}' nelze prodat.");
+                Thread.Sleep(1500);
+                Console.Clear();
+            }
+        }
+
+        private static void ProcessDisassembly(Mag player, Item selectedItem)
+        {
+            if (selectedItem.CanDisassemble)
+            {
+                Console.WriteLine($"Rozebíráte předmět '{selectedItem.Name}'...");
+
+                // Implementujte logiku pro získání materiálů z rozebírání
+                MaterialType obtainedMaterial = selectedItem.Material;
+
+                // Přidejte logiku pro získání materiálů z rozebírání
+
+                player.Inventory.Remove(selectedItem);
+                Console.WriteLine($"Předmět '{selectedItem.Name}' byl rozebrán. Získali jste materiál: {obtainedMaterial}");
+                Thread.Sleep(2000);
+            }
+            else
+            {
+                Console.WriteLine($"Předmět '{selectedItem.Name}' nelze rozebrat.");
+            }
+
+            Thread.Sleep(1500);
+            Console.Clear();
+        }
+
+
+        private static void BuyItems(Mag player)
+        {
+            Console.Clear();
+
+            DisplayInventorySectionWithNumbers("Předměty v obchodě", shopInventory, (item, index) =>
+                $"{index + 1}. {item.Name,-20}\u001b[0m |\u001b[32m  {item.Value}\u001b[0m  |\u001b[32m    {item.Experience}     ");
+
+            Console.WriteLine("|\u001b[31m 0. Odejít z nákupu\u001b[0m                          |");
+            Console.WriteLine("-----------------------------------------------");
+
+            int itemIndex;
+            while (!int.TryParse(Console.ReadLine(), out itemIndex) || itemIndex < 0 || itemIndex > shopInventory.Count)
+            {
+                Console.WriteLine("Zadejte platné číslo předmětu.");
+            }
+
+            if (itemIndex == 0)
+            {
+                Console.WriteLine("Návrat do hlavní nabídky obchodu.");
+                Thread.Sleep(1500);
+                Console.Clear();
+                return;
+            }
+
+            Item selectedItem = shopInventory[itemIndex - 1];
+
+            // Zpracování nákupu voláním oddělené metody
+            Console.WriteLine("Zadejte počet kusů, které chcete zakoupit:");
+            int quantity;
+            while (!int.TryParse(Console.ReadLine(), out quantity) || quantity <= 0)
+            {
+                Console.WriteLine("Zadejte platné množství (více než 0).");
+            }
+
+            ProcessPurchase(player, selectedItem, quantity);
+        }
+
+
+
+
+        private static void SellItem(Mag player)
+        {
+            Console.Clear();
+
+            while (true)
+            {
+                // Check if the player's inventory is empty
+                if (player.Inventory.Count == 0)
+                {
+                    Console.WriteLine("Váš inventář je prázdný. Nemáte co prodat.");
+                    Thread.Sleep(2000);
+                    Console.Clear();
+                    return; // Automatically return to the main menu
+                }
+                Console.WriteLine($"\u001b[32mPeníze hráče: {player.Money}\u001b[0m");
+
+                Console.WriteLine("Vyberte předmět k prodeji:");
+
+                for (int i = 0; i < player.Inventory.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {player.Inventory[i].Name} - Cena: {player.Inventory[i].Value} peněz");
+                }
+
+                Console.WriteLine($"0. \u001b[31mOdejít z prodeje\u001b[0m");
+
+                int itemIndex;
+                while (!int.TryParse(Console.ReadLine(), out itemIndex) || itemIndex < 0 || itemIndex > player.Inventory.Count)
+                {
+                    Console.WriteLine($"Zadejte platný index předmětu nebo číslo 0 pro odejít z prodeje.");
+                }
+
+                if (itemIndex == 0)
+                {
+                    Console.WriteLine("Návrat do hlavní nabídky obchodu.");
+                    Thread.Sleep(1500);
+                    Console.Clear();
+                    break; // Exit the loop if the player chooses to leave
+                }
+
+                Item selectedItem = player.Inventory[itemIndex - 1];
+
+                ProcessSale(player, selectedItem);
+
+            }
+        }
+
+
+
+
+
+
+        private static void DisassembleItem(Mag player)
+        {
+            Console.Clear();
+
+            while (true)
+            {
+                // Check if the player's inventory is empty
+                if (player.Inventory.Count == 0)
+                {
+                    Console.WriteLine("Váš inventář je prázdný. Není co rozebírat.");
+                    Thread.Sleep(2000);
+                    Console.Clear();
+                    return; // Automatically return to the main menu
+                }
+
+                Console.WriteLine("Vyberte předmět k rozebrání:");
+
+                for (int i = 0; i < player.Inventory.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {player.Inventory[i].Name}");
+                }
+
+                Console.WriteLine($"0. \u001b[31mOdejít z rozebrání\u001b[0m");
+
+                int itemIndex;
+                while (!int.TryParse(Console.ReadLine(), out itemIndex) || itemIndex < 0 || itemIndex > player.Inventory.Count)
+                {
+                    Console.WriteLine($"Zadejte platný index předmětu nebo číslo 0 pro odejít z rozebrání. (Max index: {player.Inventory.Count})");
+                }
+
+                if (itemIndex == 0)
+                {
+                    Console.WriteLine("Návrat do hlavní nabídky obchodu.");
+                    Thread.Sleep(1500);
+                    Console.Clear();
+                    break; // Exit the loop if the player chooses to leave
+                }
+
+                Item selectedItem = player.Inventory[itemIndex - 1];
+
+                ProcessDisassembly(player, selectedItem);
+
+
+               
+            }
+        }
+
+
+
+
+
+
+        private static void BuyItem(Mag player, Item item)
+        {
+            Console.Clear();
+
+            // Zkontrolujte, zda hráč má dostatek peněz
+            if (player.Money >= item.Value)
+            {
+                // Definujte minimální zkušenosti pro různé typy předmětů
+                int requiredExperience = 0;
+
+                // Pokud je zakoupený předmět meč, nastavte minimální zkušenosti na 60
+                if (item is Sword)
+                {
+                    requiredExperience = 2;
+                }
+                // Pokud je zakoupený předmět lektvar zdraví, nastavte minimální zkušenosti na 18
+                else if (item is HealthPotion)
+                {
+                    requiredExperience = 2;
+                }
+
+                // Zkontrolujte, zda hráč má dostatek zkušeností
+                if (player.Experience >= requiredExperience)
+                {
+                    // Odečtěte peníze od hráče
+                    player.Money -= item.Value;
+
+                    // Pokud je zakoupený předmět meč, přidejte meč
+                    if (item is Sword sword)
+                    {
+                        BuySword(player, sword);
+                    }
+                    // Pokud je zakoupený předmět lektvar zdraví, přidejte lektvar zdraví
+                    else if (item is HealthPotion healthPotion)
+                    {
+                        BuyHealthPotion(player, healthPotion);
+                    }
+                    else
+                    {
+                        // Pokud to není ani meč ani lektvar zdraví, přidejte předmět do inventáře hráče
+                        player.Inventory.Add(item);
+                    }
+
+                    Console.WriteLine($"Zakoupili jste: \u001b[33m{item.Name}\u001b[0m");
+                    Console.WriteLine("--------------------------------------------------------");
+                    Console.WriteLine($"Zbývající zlataky: \u001b[32m{player.Money}\u001b[0m\n");
+
+                    // Počkejte chvíli na zobrazení informací hráči
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    Console.WriteLine("Nemáte dostatek zkušeností na tento nákup.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nemáte dostatek peněz na tento nákup.");
+            }
+
+            // Zobrazte informace hráči po nákupu
+            Console.Clear();
+        }
+
+
+
+
+        private static void BuySword(Mag player, Sword swordItem)
+        {
+            // Vytvořte novou instanci meče s potřebnými parametry
+            Sword newSword = new Sword(swordItem.Name, swordItem.Value, swordItem.IsSellable, swordItem.Material, swordItem.CanDisassemble, swordItem.Experience);
+
+            // Přidejte nový meč do inventáře hráče
+            player.Inventory.Add(newSword);
+        }
+
+
+        private static void BuyHealthPotion(Mag player, HealthPotion healthPotionItem)
+        {
+            HealthPotion newHealthPotion = new HealthPotion(healthPotionItem.Name, healthPotionItem.Value, healthPotionItem.IsSellable, healthPotionItem.Material, healthPotionItem.Experience);
+
+            player.Inventory.Add(newHealthPotion);
+        }
+
+
+
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "player": {
+    "Defense": 0,
+    "Attacks": 0,
+    "Inventory": [
+      {
+        "Name": "Nedefinovan\u00FD p\u0159edm\u011Bt",
+        "Type": 0,
+        "Value": 14,
+        "IsSellable": true,
+        "Material": 2,
+        "Experience": 0,
+        "CanDisassemble": false
+      }
+    ],
+    "Money": 16,
+    "Health": 71,
+    "Experience": 7,
+    "MaxHealth": 100
+  },
+  "CurrentLocation": null
+}

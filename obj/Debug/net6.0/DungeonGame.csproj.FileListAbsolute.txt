@@ -1,0 +1,14 @@
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\bin\Debug\net6.0\DungeonGame.exe
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\bin\Debug\net6.0\DungeonGame.deps.json
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\bin\Debug\net6.0\DungeonGame.runtimeconfig.json
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\bin\Debug\net6.0\DungeonGame.dll
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\bin\Debug\net6.0\DungeonGame.pdb
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.AssemblyInfoInputs.cache
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.AssemblyInfo.cs
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.csproj.CoreCompileInputs.cache
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.dll
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\refint\DungeonGame.dll
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.pdb
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\DungeonGame.genruntimeconfig.cache
+C:\Users\phoen\source\repos\DungeonGame\DungeonGame\obj\Debug\net6.0\ref\DungeonGame.dll
