@@ -10,10 +10,10 @@ class Program
 
     static void Main(string[] args)
     {
+     
         Console.Title = "Dungeon of game"; // Nastavit název okna konzoly
         Game game = new Game();
         game.Start();
-
 
     }
 
@@ -28,11 +28,24 @@ class Game
     private Cave cave;
     private Expedition expedition;
 
+    private string GetPlayerName()
+    {
+        Console.Write("Zadejte jméno bojovníka: ");
+        return Console.ReadLine();
+        
+    }
+
+
+
     public Game()
     {
-        //  name, health, attack, defense, Cube, mana, magicAttack, money, experience
 
-        player = new Mag("Hrac", 100, 100, 10, new Cube(), 50, 100, 20, 101);
+       
+
+        //  name, health, attack, defense, Cube, mana, magicAttack, money, experience
+        string playerName = GetPlayerName();
+        Console.Clear();
+        player = new Mag(playerName, 100, 100, 10, new Cube(), 50, 150, 120, 101);
         cube = new Cube();
         arena = new Arena(player, GenerateFighters(60), cube);
         castle = new Castle(player, cube, GenerateFightersCastle(40));

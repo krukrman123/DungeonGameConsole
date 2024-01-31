@@ -39,6 +39,8 @@ namespace DungeonGame.Dungeon
                 Console.WriteLine("   ----------------------");
                 Console.WriteLine($"    \u001b[35mUtok:      {player.attack}\u001b[0m      ");
                 Console.WriteLine("   ----------------------");
+                Console.WriteLine($"    \u001b[34mMagicky Utok: {player.magickAttack}\u001b[0m      ");
+                Console.WriteLine("   ----------------------");
                 Console.WriteLine($"    \u001b[32mPeníze:    {player.Money}\u001b[0m        ");
                 Console.WriteLine("   ----------------------");
                 Console.WriteLine($"    \u001b[33mZkušenosti:{player.Experience}\u001b[0m        ");
@@ -57,9 +59,11 @@ namespace DungeonGame.Dungeon
                 Console.WriteLine("   ----------------------------------------------------------------");
                 Console.WriteLine($"   | \u001b[35m            3. Zvýšit útok (cena: 20 zlataku)          \u001b[0m      |");
                 Console.WriteLine("   ----------------------------------------------------------------");
-                Console.WriteLine($"   | \u001b[32m            4. Doplnit Zivoty (cena: 8 zlataku)        \u001b[0m      |");
+                Console.WriteLine($"   | \u001b[34m            4. Zvýšit magicky útok (cena: 35 zlataku)        \u001b[0m|");
                 Console.WriteLine("   ----------------------------------------------------------------");
-                Console.WriteLine($"   | \u001b[33m            5. Navštívit obchod                        \u001b[0m      |");
+                Console.WriteLine($"   | \u001b[32m            5. Doplnit Zivoty (cena: 8 zlataku)        \u001b[0m      |");
+                Console.WriteLine("   ----------------------------------------------------------------");
+                Console.WriteLine($"   | \u001b[33m            6. Navštívit obchod                        \u001b[0m      |");
                 Console.WriteLine("   ----------------------------------------------------------------\n   |                                                              |");
                 Console.WriteLine($"   | \u001b[31m            0. Odejít z vesnice                        \u001b[0m      |");
                 Console.WriteLine("   ----------------------------------------------------------------");
@@ -67,9 +71,9 @@ namespace DungeonGame.Dungeon
 
 
                 int choice;
-                while (!int.TryParse(Console.ReadLine(), out choice) || choice < 0 || choice > 5)
+                while (!int.TryParse(Console.ReadLine(), out choice) || choice < 0 || choice > 6)
                 {
-                    Console.WriteLine("Zadejte platnou volbu (1-6).");
+                    Console.WriteLine("Zadejte platnou volbu (0-6).");
                 }
 
 
@@ -88,6 +92,7 @@ namespace DungeonGame.Dungeon
                         if (player.Money >= 10)
                         {
                            player.BuyArmor();
+                           Console.WriteLine($"Zivoty byly vylepšené \u001b[31m({player.health} HP)\u001b[0m");
                         }
                         else
                         {
@@ -99,7 +104,7 @@ namespace DungeonGame.Dungeon
                         {
                             player.defense += 5; 
                             player.Money -= 15;
-                            Console.WriteLine("Obrana byla zvýšena.");
+                            Console.WriteLine($"Obrana byla zvýšena \u001b[90m({player.defense} Arm)\u001b[0m ");
                         }
                         else
                         {
@@ -111,7 +116,7 @@ namespace DungeonGame.Dungeon
                         {
                             player.attack += 10;
                             player.Money -= 20;
-                            Console.WriteLine($"Útok byl zvišen o 10 stav\u001b[35m({player.attack}Dmg)\u001b[0m");
+                            Console.WriteLine($"Útok byl zvišen o 10 stav \u001b[35m({player.attack}Dmg)\u001b[0m");
                         }
                         else
                         {
@@ -119,6 +124,18 @@ namespace DungeonGame.Dungeon
                         }
                         break;
                     case 4:
+                        if (player.Money >= 35)
+                        {
+                            player.magickAttack += 10;
+                            player.Money -= 35;
+                            Console.WriteLine($"Magicky útok byl zvišen o 10 stav \u001b[34m({player.magickAttack}Dmg)\u001b[0m");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nemáte dost peněz na vylepšení Magickeho útoku.");
+                        }
+                        break;
+                    case 5:
                         if (player is Mag)
                         {
                             Mag magPlayer = (Mag)player;
@@ -129,7 +146,7 @@ namespace DungeonGame.Dungeon
                             Console.WriteLine("Tato možnost není dostupná pro vaši postavu.");
                         }
                         break;
-                    case 5:
+                    case 6:
                         Shop.EnterShop(player);
                         break;
                 }

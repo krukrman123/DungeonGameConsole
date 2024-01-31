@@ -16,11 +16,7 @@ namespace DungeonGame.Role
         private int experience = 0;
 
 
-        public int Experience
-        {
-            get { return experience; }
-            set { experience = value; }
-        }
+        
 
 
 
@@ -52,16 +48,7 @@ namespace DungeonGame.Role
 
     
 
-        public void TakeDamage(int damage)
-        {
-            health -= damage;
-
-            if (health < 0)
-            {
-                health = 0;
-            }
-        }
-
+      
 
 
 

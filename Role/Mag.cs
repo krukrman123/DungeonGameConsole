@@ -13,11 +13,11 @@ namespace DungeonGame.Role
 {
     public class Mag : Fighter, IUpgradeable
     {
-        private int mana;
-        private int maxMana;
-        private int magickAttack;
-        private int money;
-        private int experience;
+        public int mana;
+        public int maxMana;
+        public int magickAttack;
+        public int money;
+        public int experience;
 
 
         public int Defense { get; set; }
@@ -91,6 +91,8 @@ namespace DungeonGame.Role
             set { base.maxHealth = value; }
         }
 
+       
+
         public void ApplyUpgrade()
         {
             Console.WriteLine("Vylepsil jste si zbroj!");
@@ -114,13 +116,13 @@ namespace DungeonGame.Role
             {
                 Health = MaxHealth;
                 Money -= maxCost;
-                Console.WriteLine($"Zdraví bylo doplněno na maximum za {maxCost} zlatých.");
+                Console.WriteLine($"Zdraví bylo doplněno na maximum za \u001b[32m({maxCost})\u001b[0m zlatých.");
             }
             else if (missingHealth > 0 && Money >= cost)
             {
                 Health = MaxHealth;
                 Money -= cost;
-                Console.WriteLine($"Zdraví bylo doplněno na maximum za {cost} zlatých.");
+                Console.WriteLine($"Zdraví bylo doplněno na maximum za \u001b[32m({cost})\u001b[0m zlatých.");
             }
             else if (missingHealth > 0)
             {
@@ -140,13 +142,12 @@ namespace DungeonGame.Role
             {
                 MaxHealth += 10;
                 Money -= 10;
-                Console.WriteLine("Zbroj byla zvýšena o 10.");
 
                 // Zkontrolujte, zda hráč již koupil doplnění životů
                 if (health > 80% maxHealth)
                 {
                     RestartHealth();
-                    Console.WriteLine("Životy byly doplněny.");
+                   
                 }
             }
             else
