@@ -10,90 +10,118 @@ namespace DungeonGame.Dungeon
     {
         private Mag player;
         private Cube cube;
-        private int expeditionDurationMinutes = 1; // Čas doby dobrodružství
         private Stopwatch stopwatch;
 
-        public Expedition(Mag player, Cube cube) : base()
+
+        public Expedition(Mag player, Cube cube)
         {
             this.player = player;
             this.cube = cube;
             this.stopwatch = new Stopwatch();
+
+        }
+
+        private int GenerateRandomDamage()
+        {
+            Random random = new Random();
+            // Změna na generování nezáporného náhodného poškození
+            return Math.Max(0, random.Next(10, 31));
+        }
+
+        private bool CheckProbability(int percentage)
+        {
+            Random random = new Random();
+            return random.Next(1, 101) <= percentage;
         }
 
         public void Explore()
         {
-            
             Console.WriteLine("Vyrazili jste na dobrodružství!");
 
-            // Nastavíme dobu trvání vypravy na 1 minutu (60000 milisekund)
-            int expeditionDuration = 5000;
+            int numberOfExpeditions = 1;
+            int baseExpeditionDuration = 10000;
+            int expeditionDuration;
 
-            // Vytvoříme nový časovač
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-
-            while (stopwatch.ElapsedMilliseconds < expeditionDuration)
+            while (true)
             {
-                // Zbývající čas vypravy v milisekundách
-                long remainingTime = expeditionDuration - stopwatch.ElapsedMilliseconds;
+                ;
 
-                // Převádíme zbývající čas na sekundy
-                int remainingSeconds = (int)Math.Ceiling(remainingTime / 1000.0);
+                int remainingSeconds;
+                int damageTaken = 0; // Zde udržujeme celkové poškození za všechny nebezpečné situace
 
-                // Zobrazíme zbývající čas digitálně na jednom řádku
-                Console.Write($"\rZbývající čas: {remainingSeconds} sekund");
+                stopwatch.Restart();
 
-
-                // Pravděpodobnost, že hráč utrpí poškození (např. 10%)
-                if (CheckProbability(10))
+                while (stopwatch.ElapsedMilliseconds < baseExpeditionDuration)
                 {
-                    Console.Clear();
-                    Console.WriteLine("Vyrazili jste na dobrodružství!");
+                    long remainingTime = baseExpeditionDuration - stopwatch.ElapsedMilliseconds;
+                    remainingSeconds = (int)Math.Ceiling(remainingTime / 1000.0);
+
                     Console.Write($"\rZbývající čas: {remainingSeconds} sekund");
 
-                    int damage = GenerateRandomDamage();
-                    Console.WriteLine($"\u001b[31m\nNarazili jste na nebezpečné místo! Utrpěli jste {damage} poškození.\u001b[0m");
-                    player.ReceiveDamage(damage);
+                    if (CheckProbability(90))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Vyrazili jste na dobrodružství!");
+                        Console.Write($"\rZbývající čas: {remainingSeconds} sekund");
+
+                        int damage = GenerateRandomDamage();
+                        Console.WriteLine($"\u001b[31m\nNarazili jste na nebezpečné místo! Utrpěli jste {damage} poškození.\u001b[0m");
+                        player.ReceiveDamage(damage);
+                        damageTaken += damage;
+                    }
+
+
+
+                    if (player.IsDead())
+                    {
+
+                        Console.WriteLine("\u001b[31mUmřeli jste! Hra končí.\u001b[0m");
+                        HandlePlayerMoney();    
+                        player.RestartHealth();
+                        return;
+                    }
+
+                    Thread.Sleep(1000);
                 }
 
+                Console.Clear();
+                Console.WriteLine($"Výprava č. {numberOfExpeditions} byla úspěšně dokončena!");
+                DisplayExpeditionResults();
+
+                // Zobrazíme celkové poškození a zeptáme se hráče, zda chce pokračovat
+                Console.WriteLine($"\u001b[31mCelkové poškození během výpravy: {damageTaken}\u001b[0m");
+                Console.WriteLine($"\u001b[32mCelkový čas výpravy: {baseExpeditionDuration / 1000} sekund\u001b[0m");
+
+                Thread.Sleep(2500);
 
 
-
-                // Čekáme 1 sekundu
-                Thread.Sleep(1000);
+                Console.Clear();
+                return;
             }
-
-
-     
-
-
-            // Počkáme na ukončení vypravy
-            stopwatch.Stop();
-
-            // Zobrazíme výsledky vypravy
-            DisplayExpeditionResults();
         }
 
 
 
 
-
-
-
-
-
-
-    private void DisplayExpeditionResults()
+        private void HandlePlayerMoney()
         {
-            Console.Clear();
-            Console.WriteLine("\nVyprava skončila!");
+            if (player.Money < 0)
+            {
+                Console.WriteLine("Upozornění: Nemáte dostatek peněz. Odečítáme 50 zlaťáků.");
+                player.Money = Math.Max(0, player.Money - 50);
+            }
+        }
+
+
+
+
+        private void DisplayExpeditionResults()
+        {
             Console.WriteLine($"\u001b[31mZdraví: {player.GraphicHealth()}  \u001b[0m\n");
 
-            // Příklad generování náhodných výsledků (upravte podle potřeby)
             int foundGold = GenerateRandomGoldAmount();
             Console.WriteLine($"Získali jste \u001b[33m{foundGold} zlaťáků.\u001b[0m\n");
-            
-            // Pravděpodobnost nalezení bedny se zlatem
+
             if (CheckProbability(10))
             {
                 Console.WriteLine("\u001b[32mNalezli jste bednu se zlatem!\u001b[0m\n");
@@ -102,15 +130,11 @@ namespace DungeonGame.Dungeon
                 foundGold += additionalGold;
             }
 
-            // Můžete přidat další odměny nebo události podle potřeby.
-
             // Přidáme získané zlato hráči
             player.Money += foundGold;
 
-            
             Thread.Sleep(3500);
             Console.Clear();
-
         }
 
         private int GenerateRandomGoldAmount()
@@ -119,19 +143,6 @@ namespace DungeonGame.Dungeon
             return random.Next(20, 100);
         }
 
-        private int GenerateRandomDamage()
-        {
-            Random random = new Random();
-            return random.Next(10, 30);
-        }
 
-        private bool CheckProbability(int probabilityPercentage)
-        {
-            Random random = new Random();
-            int randomNumber = random.Next(1, 101); // Generuje náhodné číslo od 1 do 100
-
-            // Porovná náhodné číslo s pravděpodobností
-            return randomNumber <= probabilityPercentage;
-        }
     }
 }

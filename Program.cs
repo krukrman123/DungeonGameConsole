@@ -28,13 +28,11 @@ class Game
     private Cave cave;
     private Expedition expedition;
 
-
-
     public Game()
     {
         //  name, health, attack, defense, Cube, mana, magicAttack, money, experience
 
-        player = new Mag("Hrac", 100, 100, 10, new Cube(), 50, 100, 150, 150);
+        player = new Mag("Hrac", 100, 100, 10, new Cube(), 50, 100, 20, 101);
         cube = new Cube();
         arena = new Arena(player, GenerateFighters(60), cube);
         castle = new Castle(player, cube, GenerateFightersCastle(40));
@@ -79,7 +77,7 @@ class Game
             Console.WriteLine("   ----------------------------------------------------------------");
             Console.WriteLine("   |        \u001b[36m4. Průzkum hradu  \u001b[0m                                    |");
             Console.WriteLine("   ----------------------------------------------------------------");
-            Console.WriteLine("   |        \u001b[36m5. Výprava (Cena 25 zlataku)\u001b[0m                          |");
+            Console.WriteLine("   |        \u001b[36m5. Výprava (Cena 50 zlataku)\u001b[0m                          |");
             Console.WriteLine("   ----------------------------------------------------------------\n   |                                                              |");
             Console.WriteLine("   |        \u001b[31m0. Ukončit hru\u001b[0m                                        |");
             Console.WriteLine("   ----------------------------------------------------------------");
@@ -125,14 +123,20 @@ class Game
                     }
                     break;
                 case 5:
-                    if (player.Money >= Constants.ExpeditionExperienceRequirement)
+                    if (player.Experience >= Constants.ExpeditionExperienceRequirement && player.Money >= Constants.ExpeditionExperienceCost)
                     {
                         player.Money -= Constants.ExpeditionExperienceCost;
                         expedition.Explore();
                     }
+                    else if (player.Experience < Constants.ExpeditionExperienceRequirement)
+                    {
+                        Console.WriteLine($" \u001b[31mNemáte dostatek zkušeností na tuto vypravu. Potřebujete alespoň {Constants.ExpeditionExperienceRequirement} zkušeností.\u001b[0m");
+                        Thread.Sleep(2500);
+                        Console.Clear();
+                    }
                     else
                     {
-                        Console.WriteLine($" \u001b[31mNemáte dostatek zlataku na tuto vypravu. Potřebujete alespoň {Constants.ExpeditionExperienceRequirement} zlataku.\u001b[0m");
+                        Console.WriteLine($" \u001b[31mNemáte dostatek zlataku na tuto vypravu. Potřebujete alespoň {Constants.ExpeditionExperienceCost} zlataku.\u001b[0m");
                         Thread.Sleep(2500);
                         Console.Clear();
                     }
@@ -158,6 +162,8 @@ class Game
             }
         }
     }
+
+
 
 
 
@@ -243,6 +249,6 @@ static class Constants
     public const int CaveExperienceRequirement = 150;       // Potreba zkusenosti pro vstup [Jeskyne]
     public const int CastleExperienceRequirement = 350;     // Potreba zkusenosti pro vstup [Hrad]
     public const int ExpeditionExperienceRequirement = 100;  // Potreba zkusenosti pro vstup [vyprava]
-    public const int ExpeditionExperienceCost = 25;         // Cena za vypravu (zlataku)
+    public const int ExpeditionExperienceCost = 50;         // Cena za vypravu (zlataku)
 }
 

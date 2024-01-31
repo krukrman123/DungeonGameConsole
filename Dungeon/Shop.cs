@@ -29,8 +29,6 @@ namespace DungeonGame.Dungeon
 
         }
 
-      
-
 
         public static void EnterShop(Mag player)
         {

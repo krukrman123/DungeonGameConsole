@@ -102,7 +102,7 @@ public class Arena: FightLogic
         {
             Console.WriteLine("V této lokalitě již nejsou žádní nepřátelé nebo jsou všichni poraženi.");
             Console.WriteLine("Pro pokoracivani stisknete klavesu enter");
-            Console.ReadLine(); // Počkejte, než hráč stiskne klávesu
+            Console.ReadLine(); 
             Console.Clear();
             return;
         }
@@ -117,10 +117,4 @@ public class Arena: FightLogic
     }
 
 
-
-    public void ExploreCave()
-    {
-        // Implementace průzkumu jeskyně
-        Console.WriteLine("Průzkum jeskyně...");
-    }
 }

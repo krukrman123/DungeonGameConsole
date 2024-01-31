@@ -30,8 +30,6 @@ namespace DungeonGame.Mechanic
 
         public CombatState combatState;
 
-        private FightLogic fightLogic;
-
         public bool UsedShield { get; set; } = false;
         public int TemporaryDefenseBonus { get; set; } = 0;
 
